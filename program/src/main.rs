@@ -9,37 +9,28 @@
 sp1_zkvm::entrypoint!(main);
 
 use alloy_sol_types::{sol, SolType};
+use reth_primitives::{Signature, B256};
+use std::str::FromStr;
 
 /// The public values encoded as a tuple that can be easily deserialized inside Solidity.
 type PublicValuesTuple = sol! {
-    tuple(uint32, uint32, uint32)
+    address
 };
 
 pub fn main() {
-    // Read an input to the program.
-    //
-    // Behind the scenes, this compiles down to a custom system call which handles reading inputs
-    // from the prover.
-    let n = sp1_zkvm::io::read::<u32>();
+    let hash =
+        B256::from_str("daf5a779ae972f972197303d7b574746c7ef83eadac0f2791ad23db92e4c8e53").unwrap();
 
-    // Compute the n'th fibonacci number, using normal Rust code.
-    let mut a = 0u32;
-    let mut b = 1u32;
-    for _ in 0..n {
-        let mut c = a + b;
-        c %= 7919;
-        a = b;
-        b = c;
-    }
+    let signature = sp1_zkvm::io::read::<Signature>();
+
+    let signer = signature.recover_signer(hash).unwrap();
 
     // Encocde the public values of the program.
-    let bytes = PublicValuesTuple::abi_encode(&(n, a, b));
+    let bytes = PublicValuesTuple::abi_encode(&signer);
 
     // Commit to the public values of the program.
     sp1_zkvm::io::commit_slice(&bytes);
 
     // Print out the public values.
-    println!("n: {}", n);
-    println!("a: {}", a);
-    println!("b: {}", b);
+    println!("value: {}", signer);
 }

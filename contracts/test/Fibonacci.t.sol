@@ -7,8 +7,6 @@ import {Fibonacci} from "../src/Fibonacci.sol";
 import {SP1Verifier} from "../src/SP1Verifier.sol";
 
 struct SP1ProofFixtureJson {
-    uint32 a;
-    uint32 b;
     uint32 n;
     bytes proof;
     bytes publicValues;
@@ -35,20 +33,18 @@ contract FibonacciTest is Test {
 
     function test_ValidFibonacciProof() public view {
         SP1ProofFixtureJson memory fixture = loadFixture();
-        (uint32 n, uint32 a, uint32 b) = fibonacci.verifyFibonacciProof(
+        uint32 n = fibonacci.verifyFibonacciProof(
             fixture.proof,
             fixture.publicValues
         );
         assert(n == fixture.n);
-        assert(a == fixture.a);
-        assert(b == fixture.b);
     }
 
     function testFail_InvalidFibonacciProof() public view {
-         SP1ProofFixtureJson memory fixture = loadFixture();
+        SP1ProofFixtureJson memory fixture = loadFixture();
         fibonacci.verifyFibonacciProof(
             fixture.publicValues,
             fixture.publicValues
         );
-    } 
+    }
 }

@@ -6,4 +6,13 @@ edition = "2021"
 
 [dependencies]
 alloy-sol-types = "0.7.2"
+hex = "0.4.3"
 sp1-zkvm = { git = "https://github.com/succinctlabs/sp1.git" }
+reth-primitives = { git = "https://github.com/sp1-patches/reth", default-features = false, branch = "sp1-reth" }
+alloy-primitives = { version = "0.6.0", default-features = false, features = [
+    "tiny-keccak"
+] }
+
+
+[patch.crates-io]
+tiny-keccak = { git = "https://github.com/sp1-patches/tiny-keccak", branch = "patch-v2.0.2" }
